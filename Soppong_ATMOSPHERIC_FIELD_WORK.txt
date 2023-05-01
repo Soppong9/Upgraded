@@ -1,0 +1,421 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+import cartopy.crs as ccrs
+from warnings import filterwarnings
+filterwarnings('ignore')
+import xarray as xr
+import cartopy.feature as cfeature
+
+Tanzania = xr.open_dataset('maca_dat.nc')
+Tanzania = Tanzania.where(Tanzania!=-99)
+Tanzania
+
+Tanzania_rr = Tanzania.precip
+Tanzania_ts =  Tanzania.precip.sel(lat=-6,lon=35,method= 'nearest')
+Tanzania_spatial =  Tanzania_rr
+
+monthly_rainfall = Tanzania_ts.groupby('datetime.month').sum()
+monthly_climatoyogies =Tanzania_ts.groupby('datetime.month').mean()
+
+monthly_rainfall.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('monthly_rainfall ',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+monthly_climatoyogies.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('monthly_climatoyogy_rainfall ',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+annual_rainfall = Tanzania_ts.groupby('datetime.year').sum()
+annual_avarage = Tanzania_ts.groupby('datetime.year').mean()
+
+annual_rainfall = Tanzania_ts.groupby('datetime.year').sum()
+fig, ax = plt.subplots(figsize = (10,5))
+plt.subplots_adjust(hspace = 0.7,wspace = 0.2)
+annual_rainfall.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+ax.set_title('Annual Precipitation variability (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+ax.set_xlabel('Year',fontweight = 'bold',fontsize = 15,color='blue')
+ax.set_ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+annual_average = Tanzania_ts.groupby('datetime.year').mean()
+fig, ax = plt.subplots(figsize = (10,5))
+plt.subplots_adjust(hspace = 0.7,wspace = 0.2)
+annual_average.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+ax.set_title('Annual_Average Precipitation variability (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+ax.set_xlabel('Year',fontweight = 'bold',fontsize = 15,color='blue')
+ax.set_ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+
+wet_days_1= Tanzania_ts.where(Tanzania_ts >= 1)
+wet_days_1
+Annual_wet_1=wet_days_1.groupby('datetime.month').mean('datetime')
+Annual_wet_1
+
+dry_days_1= Tanzania_ts.where(Tanzania_ts < 1)
+dry_days_1
+Annual_dry_1=dry_days_1.groupby('datetime.month').mean('datetime')
+Annual_dry_1
+
+Annual_wet_1.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('AMOUNT OF RAINFALL > = 1 MM per MONTH(WET) ',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+Annual_dry_1.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('AMOUNT OF RAINFALL < 1 MM per MONTH(DRY) (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+
+wet_days_year_1= Tanzania_ts.where(Tanzania_ts >= 1)
+wet_days_year_1
+Annual_wet_year_1=wet_days_1.groupby('datetime.year').mean('datetime')
+Annual_wet_year_1
+
+
+dry_days_year_1= Tanzania_ts.where(Tanzania_ts < 1)
+dry_days_year_1
+Annual_dry_year_1=dry_days_1.groupby('datetime.year').mean('datetime')
+Annual_dry_year_1
+
+Annual_wet_year_1.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('AMOUNT OF RAINFALL > = 1 MM per YEAR(WET) (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('year',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+Annual_dry_year_1.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('AMOUNT OF RAINFALL < 1 MM per YEAR(DRY) (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('year',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>=1mm)----------------month--------
+#selecting precipitation >= 1mm
+wet_days= Tanzania.precip.where(Tanzania.precip >= 1)
+wet_days
+Annual_wet=wet_days.groupby('datetime.month').mean('datetime')
+Annual_wet
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>=1 mm)----------------year--------
+#selecting precipitation >= 1mm
+wet_days_year= Tanzania.precip.where(Tanzania.precip >= 1)
+wet_days_year
+Annual_wet_year=wet_days_year.groupby('datetime.year').mean('datetime')
+Annual_wet_year
+
+fig,ax=plt.subplots(4,3,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+month_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+for i in range(12):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(month_names[i])
+    cb= ax[i].contourf(Annual_wet.lon,Annual_wet.lat,Annual_wet[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='Wet days')
+plt.suptitle('wet days per month >= 1 mm (WET)', fontweight='bold');
+plt.savefig('done.png');
+
+fig,ax=plt.subplots(5,2,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+year_names=['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023']
+for i in range(10):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(year_names[i])
+    cb= ax[i].contourf(Annual_wet_year.lon,Annual_wet_year.lat,Annual_wet_year[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='Wet days')
+plt.suptitle('wet days per Year >= 1 mm(WET)', fontweight='bold');
+plt.savefig('done.png');
+
+# SPATIAL PLOTS FOR THE NUMBER OF DRY (RR<1mm)----------------month--------
+#selecting precipitation <1mm
+Dry_days= Tanzania.precip.where(Tanzania.precip <1)
+Dry_days
+Annual_dry=Dry_days.groupby('datetime.month').mean('datetime')
+Annual_dry
+
+
+# SPATIAL PLOTS FOR THE NUMBER OF DRY (RR<1mm)----------------year--------
+#selecting precipitation <1mm
+Dry_days_year= Tanzania.precip.where(Tanzania.precip < 1)
+Dry_days_year
+Annual_dry_year=Dry_days_year.groupby('datetime.year').mean('datetime')
+Annual_dry_year
+
+fig,ax=plt.subplots(4,3,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+month_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+for i in range(12):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(month_names[i])
+    cb= ax[i].contourf(Annual_dry.lon,Annual_dry.lat,Annual_dry[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='dry days')
+plt.suptitle('dry days per month < 1 mm (DRY)', fontweight='bold');
+plt.savefig('done.png');
+
+fig,ax=plt.subplots(5,2,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+year_names=['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023']
+for i in range(10):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(year_names[i])
+    cb= ax[i].contourf(Annual_dry_year.lon,Annual_dry_year.lat,Annual_dry_year[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='dry days')
+plt.suptitle('dry days per Year < 1 mm (DRY)', fontweight='bold');
+plt.savefig('done.png');
+
+# extreme rainfall for rr > 10 per month
+extreme_rainfall_10_mon= Tanzania_ts.where(Tanzania_ts > 10 )
+extreme_rainfall_10_mon
+Annual_extreme_rainfall_10_mon=extreme_rainfall_10_mon.groupby('datetime.month').mean('datetime')
+Annual_extreme_rainfall_10_mon
+
+# extreme rainfall for rr > 10 per year
+extreme_rainfall_10_year= Tanzania_ts.where(Tanzania_ts > 10 )
+extreme_rainfall_10_year
+Annual_extreme_rainfall_10_year=extreme_rainfall_10_year.groupby('datetime.year').mean('datetime')
+Annual_extreme_rainfall_10_year
+
+# extreme rainfall for rr > 20 per month
+extreme_rainfall_20_mon= Tanzania_ts.where(Tanzania_ts > 20 )
+extreme_rainfall_20_mon
+Annual_extreme_rainfall_20_mon=extreme_rainfall_20_mon.groupby('datetime.month').mean('datetime')
+Annual_extreme_rainfall_20_mon 
+
+# extreme rainfall for rr > 20 per year
+extreme_rainfall_20_year= Tanzania_ts.where(Tanzania_ts > 20 )
+extreme_rainfall_20_year
+Annual_extreme_rainfall_20_year=extreme_rainfall_20_year.groupby('datetime.year').mean('datetime')
+Annual_extreme_rainfall_20_year
+
+Annual_extreme_rainfall_10_mon.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('EXTREME RAINFALL > 10 MM per MONTH (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+Annual_extreme_rainfall_10_year.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('EXTREME RAINFALL > 10 MM per YEAR (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('year',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+Annual_extreme_rainfall_20_mon.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('EXTREME RAINFALL > 20 MM per MONTH (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('month',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+Annual_extreme_rainfall_20_year.plot(color='red',lw = 1.5,marker = 'o',markersize = '7',label = 'precip')
+plt.title('EXTREME RAINFALL > 20 MM per YEAR (2014-2023)',fontweight = 'bold',fontsize =16,color = 'blue')
+plt.xlabel('year',fontweight = 'bold',fontsize = 15,color='blue')
+plt.ylabel('precip/mm',fontweight = 'bold',fontsize = 15,color='blue')
+plt.legend()
+plt.show()
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>10mm)----------------month--------
+#selecting precipitation > 10mm
+Dry_days_RR10= Tanzania.precip.where(Tanzania.precip >10 )
+Dry_days_RR10
+Annual_dry_RR10=Dry_days_RR10.groupby('datetime.month').mean('datetime')
+Annual_dry_RR10
+
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>10mm)----------------YEAR--------
+#selecting precipitation > 10mm
+Dry_days_RR10_year= Tanzania.precip.where(Tanzania.precip >10 )
+Dry_days_RR10_year
+Annual_dry_RR10_year=Dry_days_RR10_year.groupby('datetime.year').mean('datetime')
+Annual_dry_RR10_year
+
+fig,ax=plt.subplots(4,3,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+month_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+for i in range(12):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(month_names[i])
+    cb= ax[i].contourf(Annual_dry_RR10.lon,Annual_dry_RR10.lat,Annual_dry_RR10[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='Wet days')
+plt.suptitle('EXTREME RAINFALL > 10 mm per MONTH', fontweight='bold');
+plt.savefig('done.png');
+
+fig,ax=plt.subplots(5,2,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+year_names=['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023']
+for i in range(10):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(year_names[i])
+    cb= ax[i].contourf(Annual_dry_RR10_year.lon,Annual_dry_RR10_year.lat,Annual_dry_RR10_year[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='Wet days')
+plt.suptitle('EXTREME RAINFALL > 10 mm per YEAR', fontweight='bold');
+plt.savefig('done.png');
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>20mm)----------------month--------
+#selecting precipitation > 20mm
+Dry_days_RR20= Tanzania.precip.where(Tanzania.precip >20 )
+Dry_days_RR20
+Annual_dry_RR20=Dry_days_RR20.groupby('datetime.month').mean('datetime')
+Annual_dry_RR20
+
+
+# SPATIAL PLOTS FOR THE NUMBER OF WET (RR>20mm)----------------month--------
+#selecting precipitation > 20mm
+Dry_days_RR20_year= Tanzania.precip.where(Tanzania.precip >20 )
+Dry_days_RR20_year
+Annual_dry_RR20_year=Dry_days_RR20_year.groupby('datetime.year').mean('datetime')
+Annual_dry_RR20_year
+
+fig,ax=plt.subplots(4,3,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+month_names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+for i in range(12):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(month_names[i])
+    cb= ax[i].contourf(Annual_dry_RR20.lon,Annual_dry_RR20.lat,Annual_dry_RR20[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='wet days')
+plt.suptitle('EXTREME RAINFALL >20 mm per MONTH', fontweight='bold');
+plt.savefig('done.png');
+
+fig,ax=plt.subplots(5,2,figsize=(16,18), 
+                    subplot_kw={'projection': ccrs.PlateCarree()})
+ax=ax.flatten()
+year_names=['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023']
+for i in range(10):
+    ax[i].add_feature(cfeature.COASTLINE.with_scale('110m'),linewidth=0.5)
+    ax[i].add_feature(cfeature.BORDERS,linewidth=2)
+    ax[i].add_feature(cfeature.STATES, linewidth=0.5)
+    ax[i].add_feature(cfeature.OCEAN)
+    ax[i].add_feature(cfeature.LAKES, color='blue')
+    ax[i].add_feature(cfeature.RIVERS)
+    ax[i].set_extent([29, 40.5, -12, 0])
+    ax[i].set_title(year_names[i])
+    cb= ax[i].contourf(Annual_dry_RR20_year.lon,Annual_dry_RR20_year.lat,Annual_dry_RR20_year[i],
+                       cmap='inferno', transform=ccrs.PlateCarree())
+fig.subplots_adjust(wspace=-0.55, top=0.93)  
+color_bar=fig.add_axes([0.82,0.29,0.025,0.5])
+fig.colorbar(cb,cax=color_bar,label='Wet days')
+plt.suptitle('EXTERME RAINFALL > 20 mm  per YEAR', fontweight='bold');
+plt.savefig('done.png');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
